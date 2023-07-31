@@ -13,6 +13,7 @@ if(not(path.exists("songs"))):
 mixer.init()
 mixer.music.set_volume(100)
 playerRunning = False
+paused = False
 currentsong = "none"
 queue = []
 
@@ -35,7 +36,7 @@ def player(): # goes through the queue and plays each song until the queue is em
         currentsong = queue[0]
         mixer.music.load("songs/" + currentsong)
         mixer.music.play()
-        while(mixer.music.get_busy()):
+        while(mixer.music.get_busy() or paused):
             sleep(.25)
         if(not(queue == [])):
             if(queue[0] == currentsong):
@@ -108,6 +109,15 @@ while True: # I think there's a better way, but i don't care
             else:
                 queue = [queue[0]]
                 lessLines = 0
+        elif(query == "/pause"):
+            if(paused):
+                mixer.music.unpause()
+                print("playback resumed")
+            else:
+                mixer.music.pause()
+                print("playback paused")
+            paused = not(paused)
+            lessLines = 1
         elif(query == "/help"):
             print("/exit or /quit: clear queue and exit")
             print("/list: list all available songs")
