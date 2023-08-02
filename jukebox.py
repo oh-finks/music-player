@@ -140,13 +140,14 @@ while True: # I think there's a better way, but i don't care
         for song in songs: # checks for matching songs and adds them to the list
             if query.lower() in song.lower():
                 numFoundSongs += 1
-                print(numFoundSongs, song)
                 matchingsongs.append(song)
         if numFoundSongs > 0:
             lessLines = 0
-            print(numFoundSongs, 'songs found matching query "' + query + '"')
+            print(numFoundSongs, 'songs found matching query "' + query + '":\n')
+            for num, song in enumerate(matchingsongs):
+                print(num + 1, song)
             terminalWidth, terminalHeight = get_terminal_size()
-            blankLines(terminalHeight - numFoundSongs - 2)
+            blankLines(terminalHeight - numFoundSongs - 3)
             selection = input("select a song by the number shown: ")
             try:
                 selection = int(selection)
