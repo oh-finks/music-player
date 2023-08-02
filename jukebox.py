@@ -3,9 +3,11 @@ from os import listdir, get_terminal_size, mkdir, path, system
 from threading import Thread
 from random import sample, choice
 from time import sleep
+print("loading pygame")
 try:
     from pygame import mixer
 except:
+    print("pygame not installed, installing")
     system("pip3 install pygame")
     from pygame import mixer
 if(not(path.exists("songs"))):
@@ -113,13 +115,19 @@ while True: # I think there's a better way, but i don't care
                 queue = [queue[0]]
                 lessLines = 0
         elif(query == "/pause"):
-            if(paused):
-                mixer.music.unpause()
-                print("playback resumed")
-            else:
+            if not(paused):
                 mixer.music.pause()
                 print("playback paused")
-            paused = not(paused)
+                paused = True
+            else:
+                mixer.music.unpause()
+                print("playback resumed")
+                paused = False
+            lessLines = 1
+        elif(query == "/play"):
+            mixer.music.unpause()
+            print("playback resumed")
+            paused = False
             lessLines = 1
         elif(query == "/help"):
             print("/exit or /quit: clear queue and exit")
@@ -176,7 +184,7 @@ while True: # I think there's a better way, but i don't care
         blankLines(terminalHeight - len(queue) - 2 - lessLines)
 
 if(not(queue == [])):
-    print("clearing ",len(queue), " items from queue")
+    print("clearing",len(queue), "items from queue")
     queue = []
 
 if (playerRunning):
