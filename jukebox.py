@@ -128,8 +128,8 @@ while True: # I think there's a better way, but i don't care
             print("/skip <number>: skips current song, or the specified song in the queue")
             print("/random <number>: adds one or more random songs")
             print("/clear: clear all songs except for the song currently playing")
-            print("/help: display this help message")
             print("/volume <0 - 100>: sets volume, use system volume instead")
+            print("/help: display this help message")
             lessLines = 8
         else:
             print('unknown command "' + str(query[1:]) + '"')
