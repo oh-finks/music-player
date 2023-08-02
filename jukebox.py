@@ -34,8 +34,11 @@ def player(): # goes through the queue and plays each song until the queue is em
     playerRunning = True
     while(not(queue == [])):
         currentsong = queue[0]
-        mixer.music.load("songs/" + currentsong)
-        mixer.music.play()
+        try:
+            mixer.music.load("songs/" + currentsong)
+            mixer.music.play()
+        except:
+            print("error while attempting to play",currentsong)
         while(mixer.music.get_busy() or paused):
             sleep(.25)
         if(not(queue == [])):
