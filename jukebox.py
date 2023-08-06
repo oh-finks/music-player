@@ -17,6 +17,7 @@ mixer.music.set_volume(100)
 playerRunning = False
 paused = False
 currentsong = "none"
+shuffling = False
 queue = []
 
 def loadsongs():
@@ -46,7 +47,7 @@ def player(): # goes through the queue and plays each song until the queue is em
         if(not(queue == [])):
             if(queue[0] == currentsong):
                 queue.remove(queue[0])
-        if shuffling:
+        if shuffling and queue == []:
             queue.append(choice(songs))
     playerRunning = False
 
@@ -57,6 +58,8 @@ def startPlayer():
         playerThread.start()
 
 def skip(ID):
+    if len(queue) == 1 and shuffling:
+        queue.append(choice(songs))
     queue.remove(queue[ID-1])
     if ID == 1:
         mixer.music.stop()
@@ -139,8 +142,10 @@ while True: # I think there's a better way, but i don't care
             lessLines = 1
         elif query == "/shuffle":
             shuffling = True
-            queue.append(choice(songs))
-            startPlayer()
+            if queue == []:
+                queue.append(choice(songs))
+            if not(playerRunning):
+                startPlayer()
             lessLines = 0
         elif query == "/shuffle stop":
             shuffling = False
@@ -196,6 +201,9 @@ while True: # I think there's a better way, but i don't care
             print(number + 1, song)
         terminalWidth, terminalHeight = get_terminal_size()
         blankLines(terminalHeight - len(queue) - 2 - lessLines)
+
+if shuffling:
+    shuffling = False
 
 if(not(queue == [])):
     print("clearing",len(queue), "items from queue")
