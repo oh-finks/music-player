@@ -46,7 +46,15 @@ def player(): # goes through the queue and plays each song until the queue is em
         if(not(queue == [])):
             if(queue[0] == currentsong):
                 queue.remove(queue[0])
+        if shuffling:
+            queue.append(choice(songs))
     playerRunning = False
+
+def startPlayer():
+    global playerThread
+    if(not(playerRunning)):
+        playerThread = Thread(target=player)
+        playerThread.start()
 
 def skip(ID):
     queue.remove(queue[ID-1])
@@ -129,6 +137,14 @@ while True: # I think there's a better way, but i don't care
             print("playback resumed")
             paused = False
             lessLines = 1
+        elif query == "/shuffle":
+            shuffling = True
+            queue.append(choice(songs))
+            startPlayer()
+            lessLines = 0
+        elif query == "/shuffle stop":
+            shuffling = False
+            lessLines = 0
         elif(query == "/help"):
             print("/exit or /quit: clear queue and exit")
             print("/list: list all available songs")
@@ -174,9 +190,7 @@ while True: # I think there's a better way, but i don't care
         terminalWidth, terminalHeight = get_terminal_size()
         blankLines(terminalHeight - 2 - lessLines)
     else:
-        if(not(playerRunning)):
-            playerThread = Thread(target=player)
-            playerThread.start()
+        startPlayer()
         print("queue:")
         for number, song in enumerate(queue):
             print(number + 1, song)
