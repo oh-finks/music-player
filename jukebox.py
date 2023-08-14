@@ -3,6 +3,7 @@ from os import listdir, get_terminal_size, mkdir, path, system
 from threading import Thread
 from random import sample, choice
 from time import sleep
+print("add these for the gui bit ⏹⏯⏭")
 print("loading pygame")
 try:
     from pygame import mixer
@@ -175,17 +176,22 @@ while True: # I think there's a better way, but i don't care
             print(numFoundSongs, 'songs found matching query "' + query + '":\n')
             for num, song in enumerate(matchingsongs):
                 print(num + 1, song)
+            print("\n" + str(numFoundSongs + 1), "add all")
             terminalWidth, terminalHeight = get_terminal_size()
             blankLines(terminalHeight - numFoundSongs - 3)
             selection = input("select a song by the number shown: ")
-            try:
+            try: #makes sure it's a number
                 selection = int(selection)
                 if(selection > 0 and selection <= numFoundSongs):
                     queue.append(matchingsongs[selection-1])
+                elif selection == numFoundSongs + 1:
+                    queue += matchingsongs
                 else:
                     print("💀")
-            except:
+                    lessLines = 1
+            except: #if it's not a number
                 print("💀")
+                lessLines = 1
         else:
             print('no songs found matching query "' + query + '"')
             lessLines = 1
@@ -202,6 +208,7 @@ while True: # I think there's a better way, but i don't care
         terminalWidth, terminalHeight = get_terminal_size()
         blankLines(terminalHeight - len(queue) - 2 - lessLines)
 
+#after /exit command
 if shuffling:
     shuffling = False
 
@@ -212,4 +219,5 @@ if(not(queue == [])):
 if (playerRunning):
     print("waiting for player to finish")
     mixer.music.stop()
+    paused = False
     playerThread.join()
