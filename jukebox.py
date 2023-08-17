@@ -142,15 +142,21 @@ while True: # I think there's a better way, but i don't care
             paused = False
             lessLines = 1
         elif query == "/shuffle":
-            shuffling = True
-            if queue == []:
-                queue.append(choice(songs))
-            if not(playerRunning):
-                startPlayer()
-            lessLines = 0
+            if shuffling == False:
+                shuffling = True
+                if queue == []:
+                    queue.append(choice(songs))
+                if not(playerRunning):
+                    startPlayer()
+                print("shuffling enabled")
+            else:
+                shuffling = False
+                print("shuffling disabled")
+            lessLines = 1
         elif query == "/shuffle stop":
             shuffling = False
-            lessLines = 0
+            print("shuffling disabled")
+            lessLines = 1
         elif(query == "/help"):
             print("/exit or /quit: clear queue and exit")
             print("/list: list all available songs")
