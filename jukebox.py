@@ -65,6 +65,20 @@ def skip(ID):
     if ID == 1:
         mixer.music.stop()
 
+def shuffle(command):
+    global shuffling
+    if shuffling == False and not(command == "stop"):
+        shuffling = True
+        if queue == []:
+            queue.append(choice(songs))
+        if not(playerRunning):
+            startPlayer()
+        print("shuffling enabled")
+    else:
+        shuffling = False
+        print("shuffling disabled")
+    lessLines = 1
+
 loadsongs()
 print("queue is empty")
 lessLines = 1
@@ -141,22 +155,8 @@ while True: # I think there's a better way, but i don't care
             print("playback resumed")
             paused = False
             lessLines = 1
-        elif query == "/shuffle":
-            if shuffling == False:
-                shuffling = True
-                if queue == []:
-                    queue.append(choice(songs))
-                if not(playerRunning):
-                    startPlayer()
-                print("shuffling enabled")
-            else:
-                shuffling = False
-                print("shuffling disabled")
-            lessLines = 1
-        elif query == "/shuffle stop":
-            shuffling = False
-            print("shuffling disabled")
-            lessLines = 1
+        elif query[:8] == "/shuffle":
+            shuffle(query[9:])
         elif(query == "/help"):
             print("/exit or /quit: clear queue and exit")
             print("/list: list all available songs")

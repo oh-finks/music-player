@@ -39,12 +39,12 @@ searchResults.pack(fill="both",expand=True)
 # Create the search bar
 search_entry = tk.Entry(searchControl)
 search_button = tk.Button(searchControl, text="Search", command=search)
-search_entry.pack()
-search_button.pack()
+search_entry.pack(fill="x")
+search_button.pack(fill="x")
 
 # Create the progress bar
 progress = ttk.Progressbar(playlistControl, mode="indeterminate")
-progress.pack()
+progress.pack(fill="x")
 
 # Create the buttons
 buttons = tk.Frame(playlistControl)
@@ -52,11 +52,11 @@ play_pause = tk.Button(buttons, text="⏯", command=play_pause)
 skip = tk.Button(buttons, text="⏭", command=skip)
 shuffle = tk.Button(buttons, text="shuffle", command=shuffle)
 clear = tk.Button(buttons, text="clear", command=clear)
-play_pause.pack(side="left")
-skip.pack(side="left")
-shuffle.pack(side="left")
-clear.pack(side="left")
-buttons.pack()
+play_pause.pack(side="left", fill="x", expand=True)
+skip.pack(side="left", fill="x", expand=True)
+shuffle.pack(side="left", fill="x", expand=True)
+clear.pack(side="left", fill="x", expand=True)
+buttons.pack(fill="x")
 
 playlistControl.pack(side="left", fill="both",expand=True)
 searchControl.pack(side="right", fill="both",expand=True)
