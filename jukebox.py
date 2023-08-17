@@ -204,15 +204,13 @@ while True: # I think there's a better way, but i don't care
         # end of the search part
     if(queue == []):
         print("queue is empty")
-        terminalWidth, terminalHeight = get_terminal_size()
-        blankLines(terminalHeight - 2 - lessLines)
     else:
         startPlayer()
         print("queue:")
         for number, song in enumerate(queue):
             print(number + 1, song)
-        terminalWidth, terminalHeight = get_terminal_size()
-        blankLines(terminalHeight - len(queue) - 2 - lessLines)
+    terminalWidth, terminalHeight = get_terminal_size()
+    blankLines(terminalHeight - len(queue) - 2 - lessLines)
 
 #after /exit command
 if shuffling:
