@@ -1,4 +1,6 @@
 #!/bin/python3
+
+# have fun trying to read my code, there are like 3 useful comments
 from os import listdir, get_terminal_size, mkdir, path, system
 from threading import Thread
 from random import sample, choice
@@ -28,8 +30,7 @@ def loadsongs():
     print(len(songs), "songs loaded")
 
 def blankLines(lines):
-    for i in range(lines):
-        print()
+    print("\n"*(lines - 1))
 
 def player(): # goes through the queue and plays each song until the queue is empty, removing songs once finished
     global queue
@@ -57,6 +58,13 @@ def startPlayer():
     if(not(playerRunning)):
         playerThread = Thread(target=player)
         playerThread.start()
+
+def truncateWidth(string):
+    global terminalWidth
+    if len(string) > terminalWidth:
+        return(string[:terminalWidth-1] + ">")
+    else:
+        return(string)
 
 def skip(ID):
     if len(queue) == 1 and shuffling:
@@ -181,8 +189,8 @@ while True: # I think there's a better way, but i don't care
             lessLines = 0
             print(numFoundSongs, 'songs found matching query "' + query + '":\n')
             for num, song in enumerate(matchingsongs):
-                print(num + 1, song)
-            print("\n" + str(numFoundSongs + 1), "add all")
+                print(truncateWidth(str(num + 1) + " " + song))
+            print("\n0 add all")
             terminalWidth, terminalHeight = get_terminal_size()
             blankLines(terminalHeight - numFoundSongs - 3)
             selection = input("select a song by the number shown: ")
@@ -190,7 +198,7 @@ while True: # I think there's a better way, but i don't care
                 selection = int(selection)
                 if(selection > 0 and selection <= numFoundSongs):
                     queue.append(matchingsongs[selection-1])
-                elif selection == numFoundSongs + 1:
+                elif selection == 0:
                     queue += matchingsongs
                 else:
                     print("💀")
@@ -202,14 +210,14 @@ while True: # I think there's a better way, but i don't care
             print('no songs found matching query "' + query + '"')
             lessLines = 1
         # end of the search part
+    terminalWidth, terminalHeight = get_terminal_size()
     if(queue == []):
         print("queue is empty")
     else:
         startPlayer()
         print("queue:")
         for number, song in enumerate(queue):
-            print(number + 1, song)
-    terminalWidth, terminalHeight = get_terminal_size()
+            print(truncateWidth(str(number + 1) + " " + song))
     blankLines(terminalHeight - len(queue) - 2 - lessLines)
 
 #after /exit command
@@ -217,7 +225,7 @@ if shuffling:
     shuffling = False
 
 if(not(queue == [])):
-    print("clearing",len(queue), "items from queue")
+    print("clearing", len(queue), "items from queue")
     queue = []
 
 if (playerRunning):

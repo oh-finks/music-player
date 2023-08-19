@@ -3,6 +3,7 @@ from tkinter import ttk
 from os import listdir
 songs = listdir("/home/oh_finks/Music/4K YouTube to MP3")
 songs.sort()
+paused = False
 def search():
     results = []
     query = search_entry.get()
@@ -13,8 +14,12 @@ def search():
     for i in results:
         searchResults.insert(10000,i)
 def play_pause():
-    # Implement functionality for button a here
-    print("play/pause")
+    global paused
+    if paused:
+        play_pause.configure(text="⏵")
+    else:
+        play_pause.configure(text="⏸")
+    paused = not(paused)
 def skip():
     # Implement functionality for button b here
     print("skip")
