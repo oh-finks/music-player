@@ -75,6 +75,7 @@ def skip(ID):
 
 def shuffle(command):
     global shuffling
+    global lessLines
     if shuffling == False and not(command == "stop"):
         shuffling = True
         if queue == []:
@@ -130,17 +131,20 @@ while True: # I think there's a better way, but i don't care
                     lessLines = 1
         elif(query[:7] == "/volume"):
             if(query == "/volume"):
-                print("volume: ", int(mixer.music.get_volume()*100), "%")
+                print("volume: " + str(int(mixer.music.get_volume()*100)) + "%")
                 lessLines = 1
             else:
                 try:
                     mixer.music.set_volume(int(query[7:])/100)
+                    print("volume: " + str(int(mixer.music.get_volume()*100)) + "%")
+                    print("I hate pygame mixer volume control, just don't use it")
+                    lessLines = 2
                 except:
-                    print("error message, temporary")
+                    print("volume must be a number between 0 and 100")
                     lessLines = 1
         elif(query == "/clear"):
             if(len(queue) == 0):
-                print("cannot skip, queue is already empty")
+                print("cannot clear, queue is already empty")
                 lessLines = 1
             elif(len(queue) == 1):
                 print("only one song in queue")
