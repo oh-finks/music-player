@@ -1,18 +1,19 @@
+#!/bin/python3
 import tkinter as tk
 from tkinter import ttk
 from os import listdir
 songs = listdir("/home/oh_finks/Music/4K YouTube to MP3")
 songs.sort()
 paused = False
-def search():
+def search(event="this code sucks"):
     results = []
     query = search_entry.get()
     for i in songs:
         if query.lower() in i.lower():
             results.append(i)
-    searchResults.delete(0,10000)
+    searchResults.delete(0,'end')
     for i in results:
-        searchResults.insert(10000,i)
+        searchResults.insert('end',i)
 def play_pause():
     global paused
     if paused:
@@ -30,6 +31,8 @@ def clear():
     print("clear")
     # Implement functionality for button d here
     pass
+def addSong(event="lol"):
+    playlist.insert('end', searchResults.get(searchResults.curselection()))
 window = tk.Tk()
 test = ["song1", "song2"]
 
@@ -45,6 +48,7 @@ searchResults.pack(fill="both",expand=True)
 search_entry = tk.Entry(searchControl)
 search_button = tk.Button(searchControl, text="Search", command=search)
 search_entry.pack(fill="x")
+search_entry.bind("<Return>", search)
 search_button.pack(fill="x")
 
 # Create the progress bar
@@ -65,4 +69,5 @@ buttons.pack(fill="x")
 
 playlistControl.pack(side="left", fill="both",expand=True)
 searchControl.pack(side="right", fill="both",expand=True)
+searchResults.bind("<<ListboxSelect>>", addSong)
 window.mainloop()

@@ -5,14 +5,21 @@ from os import listdir, get_terminal_size, mkdir, path, system
 from threading import Thread
 from random import sample, choice
 from time import sleep
-print("add these for the gui bit ⏹⏯⏭")
-print("loading pygame")
+moduleLoaderFail = False
+try:
+    import tkinter as tk
+    from tkinter import ttk
+except:
+    print("tkinter not installed, please install it")
+    moduleLoaderFail = True
 try:
     from pygame import mixer
 except:
-    print("pygame not installed, installing")
-    system("pip3 install pygame")
-    from pygame import mixer
+    print("pygame not installed, please install it")
+    moduleLoaderFail = True
+if moduleLoaderFail:
+    exit()
+
 if(not(path.exists("songs"))):
     mkdir("songs")
 mixer.init()
@@ -30,7 +37,8 @@ def loadsongs():
     print(len(songs), "songs loaded")
 
 def blankLines(lines):
-    print("\n"*(lines - 1))
+    if lines > 0:
+        print("\n"*(lines - 1))
 
 def player(): # goes through the queue and plays each song until the queue is empty, removing songs once finished
     global queue
@@ -62,7 +70,7 @@ def startPlayer():
 def truncateWidth(string):
     global terminalWidth
     if len(string) > terminalWidth:
-        return(string[:terminalWidth-1] + ">")
+        return(string[:terminalWidth-2] + " >")
     else:
         return(string)
 
