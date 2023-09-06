@@ -201,15 +201,13 @@ if(not(cliMode)): #make the window
     # Create the two lists
     playlist = tk.Listbox(playlistControl)
     playlist.pack(fill="both",expand=True)
-    searchResults = tk.Listbox(searchControl)
-    searchResults.pack(fill="both",expand=True)
 
-    # Create the search bar
+    # Create the search pane
     search_entry = tk.Entry(searchControl)
-    search_button = tk.Button(searchControl, text="Search", command=GUIsearch)
+    searchResults = tk.Listbox(searchControl)
     search_entry.pack(fill="x")
+    searchResults.pack(fill="both",expand=True)
     search_entry.bind("<KeyRelease>", GUIsearch)
-    search_button.pack(fill="x")
 
     # Create the progress bar
     progress = ttk.Progressbar(playlistControl, mode="determinate", length=10)
