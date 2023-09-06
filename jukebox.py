@@ -52,11 +52,12 @@ def loadsongs():
     print(len(songs), "songs loaded")
 
 def refreshPlaylist():
-    global playlist
-    global queue
-    playlist.delete(0,'end')
-    for song in queue:
-        playlist.insert('end',song)
+    if not(cliMode):
+        global playlist
+        global queue
+        playlist.delete(0,'end')
+        for song in queue:
+            playlist.insert('end',song)
 
 def blankLines(lines):
     if lines > 0:
@@ -73,8 +74,7 @@ def clear():
     else:
         queue = [queue[0]]
         lessLines = 0
-    if not(cliMode):
-        refreshPlaylist()
+    refreshPlaylist()
 
 def player(): # goes through the queue and plays each song until the queue is empty, removing songs once finished
     global queue
@@ -90,6 +90,7 @@ def player(): # goes through the queue and plays each song until the queue is em
             if not(cliMode):
                 songLength = MP3("songs/" + currentsong)
                 songLength = songLength.info.length
+                window.title("spotifyn't|" + currentsong)
         except:
             print("error while attempting to play",currentsong)
         if cliMode:
@@ -103,8 +104,8 @@ def player(): # goes through the queue and plays each song until the queue is em
             queue.remove(queue[0])
         if shuffling and queue == []:
             queue.append(choice(songs))
-        if not(cliMode):
-            refreshPlaylist()
+        refreshPlaylist()
+    window.title("spotifyn't")
     playerRunning = False
 
 def startPlayer():
@@ -125,11 +126,11 @@ def truncateWidth(string):
         return(string)
 
 def skip(ID=1):
-    if len(queue) == 1 and shuffling:
-        queue.append(choice(songs))
-    queue.remove(queue[ID-1])
+    if len(queue) > 1:
+        queue.remove(queue[ID-1])
     if ID == 1:
         mixer.music.stop()
+    refreshPlaylist()
 
 def randomSongs(number=1):
     queue += sample(songs, number)
@@ -154,9 +155,13 @@ def shuffle(command=""):
         if not(playerRunning):
             startPlayer()
         print("shuffling enabled")
+        if(not(cliMode)):
+            shuffleButton.configure(image=shuffleEnabledIMG)
     else:
         shuffling = False
         print("shuffling disabled")
+        if(not(cliMode)):
+            shuffleButton.configure(image=shuffleIMG)
     lessLines = 1
     refreshPlaylist()
 
@@ -167,21 +172,28 @@ def togglePause():
         print("playback paused")
         paused = True
         if(not(cliMode)):
-            pauseButton.configure(text="⏵")
+            pauseButton.configure(image=playIMG)
     else:
         mixer.music.unpause()
         print("playback resumed")
         paused = False
         if(not(cliMode)):
-            pauseButton.configure(text="⏸")
+            pauseButton.configure(image=pauseIMG)
 
 def addSong(event="lol"):
     queue.append(searchResults.get(searchResults.curselection()))
     startPlayer()
     refreshPlaylist()
 
-loadsongs()
+def GUIskip(event="don't even ask"):
+    item = playlist.get(playlist.curselection())
+    if item == queue[0]:
+        skip()
+    else:
+        queue.remove(item)
+    refreshPlaylist()
 
+loadsongs()
 if(not(cliMode)): #make the window
     window = tk.Tk()
     playlistControl = tk.Frame(window)
@@ -196,29 +208,45 @@ if(not(cliMode)): #make the window
     search_entry = tk.Entry(searchControl)
     search_button = tk.Button(searchControl, text="Search", command=GUIsearch)
     search_entry.pack(fill="x")
-    search_entry.bind("<Return>", GUIsearch)
+    search_entry.bind("<KeyRelease>", GUIsearch)
     search_button.pack(fill="x")
 
     # Create the progress bar
     progress = ttk.Progressbar(playlistControl, mode="determinate", length=10)
     progress.pack(fill="x")
 
-    # Create the buttons
+    # define images for buttons
+    playIMG = tk.PhotoImage(file="buttons/play.png")
+    pauseIMG = tk.PhotoImage(file="buttons/pause.png")
+    skipIMG = tk.PhotoImage(file="buttons/skip.png")
+    shuffleIMG = tk.PhotoImage(file="buttons/shuffle.png")
+    shuffleEnabledIMG = tk.PhotoImage(file="buttons/shuffle enabled.png")
+    repeatIMG = tk.PhotoImage(file="buttons/repeat.png")
+    repeatEnabledIMG = tk.PhotoImage(file="buttons/repeat enabled.png")
+    clearIMG = tk.PhotoImage(file="buttons/clear.png")
+    # create the buttons
     buttons = tk.Frame(playlistControl)
-    pauseButton = tk.Button(buttons, text="⏯", command=togglePause)
-    skip = tk.Button(buttons, text="⏭", command=skip)
-    shuffleButton = tk.Button(buttons, text="shuffle", command=shuffle)
-    clear = tk.Button(buttons, text="clear", command=clear)
+    pauseButton = tk.Button(buttons, image=pauseIMG, command=togglePause)
+    skip = tk.Button(buttons, image=skipIMG, command=skip)
+    shuffleButton = tk.Button(buttons, image=shuffleIMG, command=shuffle)
+    clear = tk.Button(buttons, image=clearIMG, command=clear)
+    repeat = tk.Button(buttons, image=repeatIMG)
+    #pack buttons
     pauseButton.pack(side="left")
     skip.pack(side="left")
     shuffleButton.pack(side="left")
     clear.pack(side="left")
+    repeat.pack(side="left")
     buttons.pack(fill="x")
 
     playlistControl.pack(side="left", fill="both",expand=True)
     searchControl.pack(side="right", fill="both",expand=True)
     searchResults.bind("<<ListboxSelect>>", addSong)
+    playlist.bind("<<ListboxSelect>>", GUIskip)
 
+    window.title("spotifyn't")
+    logo = tk.PhotoImage(file="icon.png")
+    window.iconphoto(True, logo)
     window.mainloop()
 
 else:
@@ -338,7 +366,7 @@ else:
                 print(truncateWidth(str(number + 1) + " " + song))
         blankLines(terminalHeight - len(queue) - 2 - lessLines)
 
-#after /exit command
+#after exiting
 if shuffling:
     shuffling = False
 
