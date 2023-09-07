@@ -106,7 +106,8 @@ def player(): # goes through the queue and plays each song until the queue is em
         if shuffling and queue == []:
             queue.append(choice(songs))
         refreshPlaylist()
-    window.title("spotifyn't")
+    if not(cliMode):
+        window.title("spotifyn't")
     playerRunning = False
 
 def startPlayer():
@@ -134,6 +135,7 @@ def skip(ID=1):
     refreshPlaylist()
 
 def randomSongs(number=1):
+    global queue
     queue += sample(songs, number)
 
 def GUIsearch(arg="none"):
@@ -300,6 +302,7 @@ else:
                     except:
                         print("usage: /random <number of songs>")
                         lessLines = 1
+                randomSongs(number)
             elif(query[:7] == "/volume"):
                 if(query == "/volume"):
                     print("volume: " + str(int(mixer.music.get_volume()*100)) + "%")
