@@ -9,6 +9,7 @@ cliMode = False
 for arg in argv:
     if arg == "-c":
         cliMode = True
+repeating = False
 
 moduleLoaderFail = False
 if cliMode:
@@ -100,7 +101,7 @@ def player(): # goes through the queue and plays each song until the queue is em
             while(mixer.music.get_busy() or paused):
                 update_progress()
                 sleep(.5)
-        if not(queue == []) and queue[0] == currentsong:
+        if not(queue == []) and queue[0] == currentsong and not(repeating):
             queue.remove(queue[0])
         if shuffling and queue == []:
             queue.append(choice(songs))
@@ -162,8 +163,23 @@ def shuffle(command=""):
         print("shuffling disabled")
         if(not(cliMode)):
             shuffleButton.configure(image=shuffleIMG)
-    lessLines = 1
+    lessLines = 13
     refreshPlaylist()
+
+def repeat(command=""):
+    global repeating
+    global lessLines
+    if repeating == False and not(command == "stop"):
+        repeating = True
+        print("repeat enabled")
+        if(not(cliMode)):
+            repeatButton.configure(image=repeatEnabledIMG)
+    else:
+        repeating = False
+        print("repeat disabled")
+        if(not(cliMode)):
+            repeatButton.configure(image=repeatIMG)
+    lessLines = 1
 
 def togglePause():
     global paused
@@ -228,13 +244,13 @@ if(not(cliMode)): #make the window
     skip = tk.Button(buttons, image=skipIMG, command=skip)
     shuffleButton = tk.Button(buttons, image=shuffleIMG, command=shuffle)
     clear = tk.Button(buttons, image=clearIMG, command=clear)
-    repeat = tk.Button(buttons, image=repeatIMG)
+    repeatButton = tk.Button(buttons, image=repeatIMG, command=repeat)
     #pack buttons
     pauseButton.pack(side="left")
     skip.pack(side="left")
     shuffleButton.pack(side="left")
     clear.pack(side="left")
-    repeat.pack(side="left")
+    repeatButton.pack(side="left")
     buttons.pack(fill="x")
 
     playlistControl.pack(side="left", fill="both",expand=True)
@@ -309,12 +325,16 @@ else:
                 lessLines = 1
             elif query[:8] == "/shuffle":
                 shuffle(query[9:])
+            elif query[:7] == "/repeat":
+                repeat(query[8:])
             elif(query == "/help"):
                 print("/exit or /quit: clear queue and exit")
                 print("/list: list all available songs")
                 print("/reload: reloads all songs")
                 print("/skip <number>: skips current song, or the specified song in the queue")
                 print("/random <number>: adds one or more random songs")
+                print("/repeat: constantly repeats the currently playing song")
+                print("/shuffle: enables/disables shuffling")
                 print("/clear: clear all songs except for the song currently playing")
                 print("/volume <0 - 100>: sets volume, use system volume instead")
                 print("/help: display this help message")
