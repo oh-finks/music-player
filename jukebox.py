@@ -139,14 +139,12 @@ def randomSongs(number=1):
     queue += sample(songs, number)
 
 def GUIsearch(arg="none"):
-    results = []
     query = search_entry.get()
-    for i in songs:
-        if query.lower() in i.lower():
-            results.append(i)
     searchResults.delete(0,'end')
-    for i in results:
-        searchResults.insert('end',i)
+    if not(query == ""):
+        for match in songs:
+            if query.lower() in match.lower():
+                searchResults.insert('end',match)
 
 def shuffle(command=""):
     global shuffling
