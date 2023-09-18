@@ -19,6 +19,7 @@ else:
     try:
         import tkinter as tk
         from tkinter import ttk
+        from tkinter import Menu
     except:
         print("tkinter not installed, if you would like to use this program as a cli application please specify -c")
         moduleLoaderFail = True
@@ -261,6 +262,15 @@ if(not(cliMode)): #make the window
     window.title("spotifyn't")
     logo = tk.PhotoImage(file="icon.png")
     window.iconphoto(True, logo)
+
+    #menu stuff
+    menubar = Menu(window)
+    window.config(menu=menubar)
+
+    file_menu = Menu(menubar)
+    file_menu.add_command(label='Exit', command=window.destroy)
+    file_menu.add_command(label='reload songs', command=loadsongs)
+    menubar.add_cascade(label="File", menu=file_menu)
     window.mainloop()
 
 else:
