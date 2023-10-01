@@ -106,9 +106,12 @@ def player(): # goes through the queue and plays each song until the queue is em
             queue.remove(queue[0])
         if shuffling and queue == []:
             queue.append(choice(songs))
-        refreshPlaylist()
+        if not(cliMode):
+            refreshPlaylist()
     if not(cliMode):
         window.title("spotifyn't")
+        update_progress()
+        refreshPlaylist()
     playerRunning = False
 
 def startPlayer():
@@ -118,8 +121,11 @@ def startPlayer():
         playerThread.start()
 
 def update_progress():
-    progress_value = int(mixer.music.get_pos()/1000)  # Example value, replace with your changing variable
-    progress['value'] = progress_value/songLength*100
+    if playerRunning:
+        progress_value = int(mixer.music.get_pos()/1000)
+        progress['value'] = progress_value/songLength*100
+    else:
+        progress['value'] = 0
 
 def truncateWidth(string):
     global terminalWidth
@@ -129,15 +135,21 @@ def truncateWidth(string):
         return(string)
 
 def skip(ID=1):
-    if len(queue) > 1:
+    if len(queue) > 0:
         queue.remove(queue[ID-1])
     if ID == 1:
         mixer.music.stop()
     refreshPlaylist()
 
+def restart():
+    mixer.music.set_pos(0)
+
 def randomSongs(number=1):
     global queue
     queue += sample(songs, number)
+    startPlayer()
+    if not(cliMode):
+        refreshPlaylist()
 
 def GUIsearch(arg="none"):
     query = search_entry.get()
@@ -204,10 +216,7 @@ def addSong(event="lol"):
 
 def GUIskip(event="don't even ask"):
     item = playlist.get(playlist.curselection())
-    if item == queue[0]:
-        skip()
-    else:
-        queue.remove(item)
+    skip(item)
     refreshPlaylist()
 
 loadsongs()
@@ -233,6 +242,7 @@ if(not(cliMode)): #make the window
     # define images for buttons
     playIMG = tk.PhotoImage(file="buttons/play.png")
     pauseIMG = tk.PhotoImage(file="buttons/pause.png")
+    restartIMG = tk.PhotoImage(file="buttons/restart.png")
     skipIMG = tk.PhotoImage(file="buttons/skip.png")
     shuffleIMG = tk.PhotoImage(file="buttons/shuffle.png")
     shuffleEnabledIMG = tk.PhotoImage(file="buttons/shuffle enabled.png")
@@ -242,15 +252,17 @@ if(not(cliMode)): #make the window
     # create the buttons
     buttons = tk.Frame(playlistControl)
     pauseButton = tk.Button(buttons, image=pauseIMG, command=togglePause)
-    skip = tk.Button(buttons, image=skipIMG, command=skip)
+    restartButton = tk.Button(buttons, image=restartIMG, command=restart)
+    skipButton = tk.Button(buttons, image=skipIMG, command=skip)
     shuffleButton = tk.Button(buttons, image=shuffleIMG, command=shuffle)
-    clear = tk.Button(buttons, image=clearIMG, command=clear)
+    clearButton = tk.Button(buttons, image=clearIMG, command=clear)
     repeatButton = tk.Button(buttons, image=repeatIMG, command=repeat)
     #pack buttons
     pauseButton.pack(side="left")
-    skip.pack(side="left")
+    restartButton.pack(side="left")
+    skipButton.pack(side="left")
     shuffleButton.pack(side="left")
-    clear.pack(side="left")
+    clearButton.pack(side="left")
     repeatButton.pack(side="left")
     buttons.pack(fill="x")
 
@@ -270,8 +282,17 @@ if(not(cliMode)): #make the window
 
     file_menu = Menu(menubar, tearoff=False)
     file_menu.add_command(label='Exit', command=window.destroy)
-    file_menu.add_command(label='reload songs', command=loadsongs)
+    file_menu.add_command(label='Reload songs', command=loadsongs)
     menubar.add_cascade(label="File", menu=file_menu)
+
+    random_menu = Menu(menubar, tearoff=False)
+    random_menu.add_command(label='1', command=lambda: randomSongs(1))
+    random_menu.add_command(label='5', command=lambda: randomSongs(5))
+    random_menu.add_command(label='10', command=lambda: randomSongs(10))
+    random_menu.add_command(label='20', command=lambda: randomSongs(20))
+    random_menu.add_command(label='50', command=lambda: randomSongs(50))
+    menubar.add_cascade(label="Random", menu=random_menu)
+
     window.mainloop()
 
 else:
@@ -341,14 +362,17 @@ else:
                 repeat(query[8:])
             elif(query == "/help"):
                 print("/exit or /quit: clear queue and exit")
-                print("/list: list all available songs")
-                print("/reload: reloads all songs")
+                print("/pause: pause or unpause the song")
+                print("/play: unpause the current song")
+                print("/restart: restart the current song")
                 print("/skip <number>: skips current song, or the specified song in the queue")
                 print("/random <number>: adds one or more random songs")
-                print("/repeat: constantly repeats the currently playing song")
-                print("/shuffle: enables/disables shuffling")
+                print("/repeat: toggle repeating the current song")
+                print("/shuffle (stop): enables/disables shuffling")
                 print("/clear: clear all songs except for the song currently playing")
                 print("/volume <0 - 100>: sets volume, use system volume instead")
+                print("/list: list all available songs")
+                print("/reload: reloads all songs")
                 print("/help: display this help message")
                 lessLines = 8
             else:
