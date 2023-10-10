@@ -136,10 +136,11 @@ def truncateWidth(string):
 
 def skip(ID=1):
     if len(queue) > 0:
-        queue.remove(queue[ID-1])
+        queue.pop(ID-1)
     if ID == 1:
         mixer.music.stop()
-    refreshPlaylist()
+    if not(cliMode):
+        refreshPlaylist()
 
 def restart():
     mixer.music.set_pos(0)
@@ -215,9 +216,7 @@ def addSong(event="lol"):
     refreshPlaylist()
 
 def GUIskip(event="don't even ask"):
-    item = playlist.get(playlist.curselection())
-    skip(item)
-    refreshPlaylist()
+    skip(playlist.curselection()[0] + 1)
 
 loadsongs()
 if(not(cliMode)): #make the window
