@@ -211,12 +211,14 @@ def togglePause():
             pauseButton.configure(image=pauseIMG)
 
 def addSong(event="lol"):
-    queue.append(searchResults.get(searchResults.curselection()))
-    startPlayer()
-    refreshPlaylist()
+    if searchResults.size() > 0:
+        queue.append(searchResults.get(searchResults.curselection()))
+        startPlayer()
+        refreshPlaylist()
 
 def GUIskip(event="don't even ask"):
-    skip(playlist.curselection()[0] + 1)
+    if playlist.size() > 0:
+        skip(playlist.curselection()[0] + 1)
 
 loadsongs()
 if(not(cliMode)): #make the window
