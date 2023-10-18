@@ -256,15 +256,15 @@ if(not(cliMode)): #make the window
     restartButton = tk.Button(buttons, image=restartIMG, command=restart)
     skipButton = tk.Button(buttons, image=skipIMG, command=skip)
     shuffleButton = tk.Button(buttons, image=shuffleIMG, command=shuffle)
-    clearButton = tk.Button(buttons, image=clearIMG, command=clear)
     repeatButton = tk.Button(buttons, image=repeatIMG, command=repeat)
+    clearButton = tk.Button(buttons, image=clearIMG, command=clear)
     #pack buttons
     pauseButton.pack(side="left")
     restartButton.pack(side="left")
     skipButton.pack(side="left")
     shuffleButton.pack(side="left")
-    clearButton.pack(side="left")
     repeatButton.pack(side="left")
+    clearButton.pack(side="left")
     buttons.pack(fill="x")
 
     playlistControl.pack(side="left", fill="both",expand=True)
