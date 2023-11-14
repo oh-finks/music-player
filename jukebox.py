@@ -1,16 +1,44 @@
 #!/bin/python3
 
-from os import listdir, get_terminal_size, mkdir, path, system
+from os import listdir, get_terminal_size, mkdir, path, system, remove
 from sys import argv
 from threading import Thread
 from random import sample, choice
 from time import sleep
-cliMode = False
+# horrible code warning! lines 9 through 40
+musicDir = "songs"
 for arg in argv:
-    if arg == "-c":
-        cliMode = True
-repeating = False
+    if arg[0] == "-":
+        if "r" in arg:
+            remove("settings.conf")
+if not(path.exists("settings.conf")):
+    settings = open("settings.conf", "w")
+    settings.write("default-mode:" + input("preferred interface:\n1. gui\n2. cli\n> ") + ";")
+    settings.write("music-dir:" + input("Path to the music folder\n> ") + ";")
+    settings.close()
 
+settings = open("settings.conf")
+variablename = settings.read()
+variablename = variablename.split(";")
+for othervariable in variablename:
+    thirdvariable = othervariable.split(":")
+    if "default-mode" in thirdvariable[0]:
+        if "1" in thirdvariable[1]:
+            cliMode = False
+    if "default-mode" in thirdvariable[0]:
+        if "2" in thirdvariable[1]:
+            cliMode = True
+    if "music-dir" in thirdvariable[0]:
+        musicDir = thirdvariable[1]
+
+for arg in argv:
+    if arg[0] == "-":
+        if "c" in arg:
+            cliMode = True
+        if "g" in arg:
+            cliMode = False
+
+repeating = False
 moduleLoaderFail = False
 if cliMode:
     print("cli mode")
@@ -21,12 +49,12 @@ else:
         from tkinter import ttk
         from tkinter import Menu
     except:
-        print("tkinter not installed, if you would like to use this program as a cli application please specify -c")
+        print("tkinter not installed, required for use as a gui application")
         moduleLoaderFail = True
     try:
         from mutagen.mp3 import MP3
     except:
-        print("mutagen not installed, please install it")
+        print("mutagen not installed, required for use as a gui application")
         exit()
 try:
     from pygame import mixer
@@ -36,7 +64,7 @@ except:
 if moduleLoaderFail:
     exit()
 
-if(not(path.exists("songs"))):
+if(not(path.exists(musicDir))):
     print("please create a directory named 'songs' in the current directory, or symlink an already existing music folder")
     exit()
 mixer.init()
@@ -49,7 +77,7 @@ queue = []
 
 def loadsongs():
     global songs
-    songs = listdir("songs")
+    songs = listdir(musicDir)
     songs.sort()
     print(len(songs), "songs loaded")
 
@@ -87,10 +115,10 @@ def player(): # goes through the queue and plays each song until the queue is em
     while(not(queue == [])):
         currentsong = queue[0]
         try:
-            mixer.music.load("songs/" + currentsong)
+            mixer.music.load(musicDir + "/" + currentsong)
             mixer.music.play()
             if not(cliMode):
-                songLength = MP3("songs/" + currentsong)
+                songLength = MP3(musicDir + "/" + currentsong)
                 songLength = songLength.info.length
                 window.title("spotifyn't|" + currentsong)
         except:
@@ -241,15 +269,15 @@ if(not(cliMode)): #make the window
     progress.pack(fill="x")
 
     # define images for buttons
-    playIMG = tk.PhotoImage(file="buttons/play.png")
-    pauseIMG = tk.PhotoImage(file="buttons/pause.png")
-    restartIMG = tk.PhotoImage(file="buttons/restart.png")
-    skipIMG = tk.PhotoImage(file="buttons/skip.png")
-    shuffleIMG = tk.PhotoImage(file="buttons/shuffle.png")
-    shuffleEnabledIMG = tk.PhotoImage(file="buttons/shuffle enabled.png")
-    repeatIMG = tk.PhotoImage(file="buttons/repeat.png")
-    repeatEnabledIMG = tk.PhotoImage(file="buttons/repeat enabled.png")
-    clearIMG = tk.PhotoImage(file="buttons/clear.png")
+    playIMG = tk.PhotoImage(file="assets/play.png")
+    pauseIMG = tk.PhotoImage(file="assets/pause.png")
+    restartIMG = tk.PhotoImage(file="assets/restart.png")
+    skipIMG = tk.PhotoImage(file="assets/skip.png")
+    shuffleIMG = tk.PhotoImage(file="assets/shuffle.png")
+    shuffleEnabledIMG = tk.PhotoImage(file="assets/shuffle enabled.png")
+    repeatIMG = tk.PhotoImage(file="assets/repeat.png")
+    repeatEnabledIMG = tk.PhotoImage(file="assets/repeat enabled.png")
+    clearIMG = tk.PhotoImage(file="assets/clear.png")
     # create the buttons
     buttons = tk.Frame(playlistControl)
     pauseButton = tk.Button(buttons, image=pauseIMG, command=togglePause)
@@ -273,7 +301,7 @@ if(not(cliMode)): #make the window
     playlist.bind("<<ListboxSelect>>", GUIskip)
 
     window.title("spotifyn't")
-    logo = tk.PhotoImage(file="icon.png")
+    logo = tk.PhotoImage(file="assets/icon.png")
     window.iconphoto(True, logo)
     window.geometry("500x300")
 
