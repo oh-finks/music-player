@@ -315,6 +315,7 @@ if(not(cliMode)): #make the window
     menubar.add_cascade(label="File", menu=file_menu)
 
     random_menu = Menu(menubar, tearoff=False)
+    # tried to DRY this out, but it didn't work. don't touch.
     random_menu.add_command(label='1', command=lambda: randomSongs(1))
     random_menu.add_command(label='5', command=lambda: randomSongs(5))
     random_menu.add_command(label='10', command=lambda: randomSongs(10))
