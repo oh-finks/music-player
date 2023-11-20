@@ -309,6 +309,8 @@ if(not(cliMode)): #make the window
 
     playlistControl.pack(side="left", fill="both",expand=True)
     searchControl.pack(side="right", fill="both",expand=True)
+    playlistControl.pack_propagate(False)
+    searchControl.pack_propagate(False)
     searchResults.bind("<<ListboxSelect>>", addSong)
     playlist.bind("<<ListboxSelect>>", GUIskip)
 
