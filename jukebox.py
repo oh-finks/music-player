@@ -106,6 +106,13 @@ def clear():
         lessLines = 0
     refreshPlaylist()
 
+def formatTime(time): # returns string
+	m = int(time/60)
+	s = int(time%60)
+	if s < 10:
+		s = f"0{s}"
+	return(f"{m}:{s}")
+
 def player(): # goes through the queue and plays each song until the queue is empty, removing songs once finished
     global queue
     global playerRunning
@@ -152,6 +159,7 @@ def update_progress():
     if playerRunning:
         progress_value = int(mixer.music.get_pos()/1000)
         progress['value'] = progress_value/songLength*100
+        timeThingy['text'] = formatTime(progress_value) + "/" + formatTime(songLength)
     else:
         progress['value'] = 0
 
@@ -253,18 +261,22 @@ if(not(cliMode)): #make the window
     window = tk.Tk()
     playlistControl = tk.Frame(window)
     searchControl = tk.Frame(window)
-    # Create the two lists
+    # create the two lists
     playlist = tk.Listbox(playlistControl)
     playlist.pack(fill="both",expand=True)
 
-    # Create the search pane
+    # create the search pane
     search_entry = tk.Entry(searchControl)
     searchResults = tk.Listbox(searchControl)
     search_entry.pack(fill="x")
     searchResults.pack(fill="both",expand=True)
     search_entry.bind("<KeyRelease>", GUIsearch)
 
-    # Create the progress bar
+    # create the time thingy (don't know the right name)
+    timeThingy = tk.Label(playlistControl, text="0:00/0:00")
+    timeThingy.pack(fill="x")
+
+    # create the progress bar
     progress = ttk.Progressbar(playlistControl, mode="determinate", length=10)
     progress.pack(fill="x")
 
@@ -363,7 +375,7 @@ else:
                         print("usage: /random <number of songs>")
                         lessLines = 1
                 randomSongs(number)
-            elif(query[:7] == "/volume"):
+            elif(query[:7] == "/volume"): # DON'T USE pygame mixer volume
                 if(query == "/volume"):
                     print("volume: " + str(int(mixer.music.get_volume()*100)) + "%")
                     lessLines = 1
@@ -371,7 +383,6 @@ else:
                     try:
                         mixer.music.set_volume(int(query[7:])/100)
                         print("volume: " + str(int(mixer.music.get_volume()*100)) + "%")
-                        print("I hate pygame mixer volume control, just don't use it")
                         lessLines = 2
                     except:
                         print("volume must be a number between 0 and 100")
