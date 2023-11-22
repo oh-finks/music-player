@@ -277,7 +277,7 @@ if(not(cliMode)): #make the window
     timeThingy.pack(fill="x")
 
     # create the progress bar
-    progress = ttk.Progressbar(playlistControl, mode="determinate", length=10)
+    progress = ttk.Progressbar(playlistControl, mode="determinate")
     progress.pack(fill="x")
 
     # define images for buttons
