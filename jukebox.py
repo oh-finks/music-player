@@ -13,23 +13,22 @@ for arg in argv:
             remove("settings.conf")
 if not(path.exists("settings.conf")):
     settings = open("settings.conf", "w")
-    settings.write("default-mode:" + input("preferred interface:\n1. gui\n2. cli\n> ") + ";")
-    settings.write("music-dir:" + input("Path to the music folder\n> ") + ";")
+    settings.write("default-mode=" + input("preferred interface (gui/cli):\n") + "\n")
+    settings.write("music-dir=" + input("Path to the music folder\n> ") + "\n")
     settings.close()
 
 settings = open("settings.conf")
-variablename = settings.read()
-variablename = variablename.split(";")
-for othervariable in variablename:
-    thirdvariable = othervariable.split(":")
-    if "default-mode" in thirdvariable[0]:
-        if "1" in thirdvariable[1]:
+conf = settings.read()
+for line in conf.split("\n"):
+    option, value = line.split("=")
+    if "default-mode" in option:
+        if "gui" in value:
             cliMode = False
-    if "default-mode" in thirdvariable[0]:
-        if "2" in thirdvariable[1]:
+    if "default-mode" in option:
+        if "cli" in value:
             cliMode = True
-    if "music-dir" in thirdvariable[0]:
-        musicDir = thirdvariable[1]
+    if "music-dir" in option:
+        musicDir = value
 
 for arg in argv:
     if arg[0] == "-":
@@ -65,7 +64,7 @@ if moduleLoaderFail:
     exit()
 
 if(not(path.exists(musicDir))):
-    print("please create a directory named 'songs' in the current directory, or symlink an already existing music folder")
+    print("please make sure that you specified the proper path to the music directory. use -r to reset your configuration file")
     exit()
 mixer.init()
 mixer.music.set_volume(100)
