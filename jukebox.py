@@ -5,7 +5,7 @@ from sys import argv
 from threading import Thread
 from random import sample, choice
 from time import sleep
-# horrible code warning! lines 9 through 40
+# horrible code warning! next 30 lines
 musicDir = "songs"
 for arg in argv:
     if arg[0] == "-":
@@ -45,8 +45,7 @@ else:
     print("gui mode")
     try:
         import tkinter as tk
-        from tkinter import ttk
-        from tkinter import Menu
+        from tkinter import ttk, Menu
     except:
         print("tkinter not installed, required for use as a gui application")
         moduleLoaderFail = True
