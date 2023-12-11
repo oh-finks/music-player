@@ -1,3 +1,3 @@
 # music-player
-## a lighweight music player written in python using pygame
+## a music player written in python using pygame
 
