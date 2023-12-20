@@ -181,6 +181,8 @@ def restart():
 
 def randomSongs(number=1):
     global queue
+    if number > len(songs):
+        number = len(songs)
     queue += sample(songs, number)
     startPlayer()
     if not(cliMode):
@@ -211,7 +213,7 @@ def shuffle(command=""):
         print("shuffling disabled")
         if(not(cliMode)):
             shuffleButton.configure(image=shuffleIMG)
-    lessLines = 13
+    lessLines = 2
     refreshPlaylist()
 
 def repeat(command=""):
@@ -375,6 +377,7 @@ else:
                         print("usage: /random <number of songs>")
                         lessLines = 1
                 randomSongs(number)
+                lessLines = 0
             elif(query[:7] == "/volume"): # DON'T USE pygame mixer volume
                 if(query == "/volume"):
                     print("volume: " + str(int(mixer.music.get_volume()*100)) + "%")
@@ -389,6 +392,8 @@ else:
                         lessLines = 1
             elif(query == "/clear"):
                 clear()
+                lessLines = 1
+                print("queue cleared")
             elif(query == "/pause"):
                 togglePause()
                 lessLines = 1
@@ -401,6 +406,8 @@ else:
                 shuffle(query[9:])
             elif query[:7] == "/repeat":
                 repeat(query[8:])
+            elif query == "/restart":
+                restart()
             elif(query == "/help"):
                 print("/exit or /quit: clear queue and exit")
                 print("/pause: pause or unpause the song")
@@ -445,8 +452,9 @@ else:
                         print("💀")
                         lessLines = 1
                 except: #if it's not a number
-                    print("💀")
-                    lessLines = 1
+                    if selection != "":
+                        print("💀")
+                        lessLines = 1
             else:
                 print('no songs found matching query "' + query + '"')
                 lessLines = 1
@@ -469,8 +477,6 @@ if(not(queue == [])):
     print("clearing", len(queue), "items from queue")
     queue = []
 
-if (playerRunning):
+if(playerRunning):
     print("waiting for player to finish")
-    mixer.music.stop()
-    paused = False
-    playerThread.join()
+    skip()
